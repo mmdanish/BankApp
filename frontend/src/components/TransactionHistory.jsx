@@ -37,7 +37,7 @@ const TransactionHistory = () => {
             <h1 className="text-2xl font-bold mb-6">Transaction History</h1>
           </div>
 
-          <div className="">
+          <div className="h-[400px] overflow-y-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-t-2 border-b-2 border-black">
