@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Navbar = () => {
   const [profileImageUrl, setProfileImageUrl] = useState("");
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,9 +15,7 @@ const Navbar = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get("/api/users/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setProfileImageUrl(`http://localhost:4000/${response.data.photo}`);
       } catch (error) {
@@ -23,51 +23,80 @@ const Navbar = () => {
       }
     };
 
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("/api/notifications", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("Fetched notifications:", response.data);
+        setNotifications(response.data); // Check if response.data is an array of notifications
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
     fetchProfileImage();
+    fetchNotifications();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
+  // Function to mark a notification as read and remove it from the list
+  const markAsRead = async (notificationId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `/api/notifications/${notificationId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-    // Show toast notification
-    toast.success("Logout successful!");
-    
-    setTimeout(() => {
-      navigate('/');
-    }, 1500);
+      // Remove the notification from the state to clear it from the dropdown
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter(
+          (notification) => notification._id !== notificationId
+        )
+      );
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userData");
+    toast.success("Logout successful!");
+    setTimeout(() => navigate("/"), 1500);
+  };
+
+  const toggleNotifications = () => setShowNotifications(!showNotifications);
+
   return (
-    <div className="flex justify-between items-center px-6 py-4 bg-[#87b4a6] font-bold">
+    <div className="flex justify-between items-center px-6 py-4 bg-[#87b4a6] font-bold relative">
       <ToastContainer />
-      {/* Left Section - Profile Icon */}
       <div className="flex items-center">
         <Link to="/user/viewProfile">
-        {profileImageUrl ? (
-          <img
-            src={profileImageUrl} 
-            alt="Profile"
-            className="w-10 h-10 rounded-full object-cover"
-          />
-
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-gray-300 mr-4"></div> // Placeholder if no image
-        )}
+          {profileImageUrl ? (
+            <img
+              src={profileImageUrl}
+              alt="Profile"
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gray-300 mr-4"></div>
+          )}
         </Link>
       </div>
 
-      {/* Center Section - Home Link */}
       <div className="flex-grow flex justify-center">
         <Link to="/user/home" className="hover:underline text-lg">
           Home
         </Link>
       </div>
 
-      {/* Right Section - Icons and Links */}
-      <div className="flex items-center gap-6">
-        <Link to="#">
-          {/* Notification Icon */}
+      <div className="flex items-center gap-6 relative">
+        <button onClick={toggleNotifications} className="relative">
           <svg
             width="24"
             height="24"
@@ -90,7 +119,31 @@ const Navbar = () => {
               strokeLinejoin="round"
             />
           </svg>
-        </Link>
+          {notifications.length > 0 && (
+            <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+              {notifications.length}
+            </span>
+          )}
+        </button>
+
+        {showNotifications && (
+                    <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 transform transition-transform duration-200 ease-in-out"
+                         style={{ top: "100%" }}>
+                        {notifications.length > 0 ? (
+                            <div className="max-h-60 overflow-y-scroll">
+                                {notifications.map((notification) => (
+                                    <div key={notification._id} className="p-2 border-b cursor-pointer" onClick={() => markAsRead(notification._id)}>
+                                        <p className="text-sm">{notification.message}</p>
+                                        <p className="text-xs text-gray-500">{new Date(notification.timestamp).toLocaleString()}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-500">No new notifications</p>
+                        )}
+                    </div>
+                )}
+
         <Link to="/user/deposit" className="hover:underline">
           Deposit
         </Link>
@@ -98,7 +151,6 @@ const Navbar = () => {
           Withdraw
         </Link>
         <button onClick={handleLogout} className="flex items-center">
-          {/* Logout Icon */}
           <svg
             width="24"
             height="24"

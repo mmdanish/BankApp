@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes.js";
 import transactionRoutes from  "./routes/transactionRoutes.js";
 import adminRoutes from  "./routes/adminRoutes.js";
+import notificationRoutes from "./routes/notifications.js";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ mongoose
 app.use("/api/users", userRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // start the server
 const PORT = process.env.PORT || 4000;
