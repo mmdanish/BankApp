@@ -152,6 +152,7 @@ function RegisterPage() {
                 showToggle={true}
                 showPassword={showPassword}
                 setShowPassword={setShowPassword}
+                showHint={true}
               />
               <div className="relative mt-4">
                 <input
@@ -290,9 +291,10 @@ function InputField({
   showToggle,
   showPassword,
   setShowPassword,
+  showHint,
 }) {
   return (
-    <div className="relative">
+    <div className="relative mb-4">
       <input
         type={type}
         id={name}
@@ -322,6 +324,13 @@ function InputField({
         >
           <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
         </span>
+      )}
+
+      {/* Passwords Requirements Hint */}
+      {showHint && focused && name === "password" && (
+        <p className="text-xs text-gray-600 mt-2 ml-1 absolute">
+          Password must contain at least 1 uppercase letter, 1 digit, and 1 symbol.
+        </p>
       )}
     </div>
   );
