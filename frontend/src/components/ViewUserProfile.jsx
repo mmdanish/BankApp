@@ -47,7 +47,7 @@ const ViewUserProfile = () => {
         ></div>
 
         {/* User Information Container covering 2/3 of the screen */}
-        <div className="relative w-1/2 bg-[#B7DACF] rounded-3xl shadow-lg p-8 ml-10 flex flex-col justify-start items-center h-[600px] mt-20 me-10">
+        <div className="relative w-1/2 bg-[#B7DACF] rounded-3xl shadow-lg p-8 ml-10 flex flex-col justify-start items-center h-[500px] mx-auto mt-20 me-10">
           <div className="flex flex-col items-center mb-5">
             <img
               src={`http://localhost:4000/${userData.image}`} // Use the correct variable here

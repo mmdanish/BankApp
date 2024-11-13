@@ -30,7 +30,7 @@ const ViewProfile = () => {
         className="bg-cover bg-center h-screen flex justify-start items-center"
         style={{ backgroundImage: `url(${bankImage})` }}
       >
-        <div className="relative w-[36rem] h-[42rem] bg-[#B7DACF] rounded-3xl shadow-lg p-8 ml-10">
+        <div className="relative w-[36rem] h-[36rem] bg-[#B7DACF] rounded-3xl shadow-lg p-8 ml-10 mb-10">
           <div className="flex flex-col items-center mb-5">
             <img
               src={`http://localhost:4000/${profileData.photo}`}
